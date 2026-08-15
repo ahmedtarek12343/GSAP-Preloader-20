@@ -22,178 +22,195 @@ const App = () => {
       }, 178);
     });
   }
+  function preloadImages(callback) {
+    const total = 9 * 4; // 9 image groups, 4 frames each
+    let loaded = 0;
+
+    for (let mainIdx = 1; mainIdx <= 9; mainIdx++) {
+      for (let frame = 1; frame <= 4; frame++) {
+        const img = new Image();
+        img.src = `/image${mainIdx}_${frame}.png`;
+        img.onload = img.onerror = () => {
+          loaded++;
+          if (loaded === total) callback();
+        };
+      }
+    }
+  }
 
   useGSAP(() => {
-    const tl = gsap.timeline();
+    preloadImages(() => {
+      const tl = gsap.timeline();
 
-    gsap.set(".main-img-cpy", {
-      autoAlpha: 0,
-    });
+      gsap.set(".main-img-cpy", {
+        autoAlpha: 0,
+      });
 
-    tl.from(".logo", {
-      opacity: 0.2,
-      duration: 1.5,
-    })
-      .from([".project-item-header-1", ".project-item-header-2"], {
-        opacity: 0,
-        onStart: shuffleImage,
-        onComplete: () => {
-          gsap.set(".logo", {
-            display: "none",
-          });
-        },
+      tl.from(".logo", {
+        opacity: 0.2,
+        duration: 1.5,
       })
-      .fromTo(
-        ".project-item-1",
-        {
+        .from([".project-item-header-1", ".project-item-header-2"], {
           opacity: 0,
-        },
-        {
-          opacity: 0.4,
-          stagger: 0.05,
-        },
-        "<",
-      )
-      .fromTo(
-        ".project-item-2",
-        {
-          opacity: 0,
-        },
-        {
-          opacity: 0.4,
-          stagger: 0.05,
-        },
-        "<",
-      )
-      .from(
-        ".img",
-        {
-          clipPath: "inset(0 0 100% 0)",
-          ease: "glide",
-        },
-        "<",
-      )
-      .to(".project-item-1", {
-        opacity: 1,
-        stagger: 0.08,
-      })
-      .to(
-        ".project-item-2",
-        {
-          opacity: 1,
-          stagger: 0.08,
-        },
-        "<",
-      )
-      .to(".project-item-header-1", {
-        clipPath: "inset(0 0 100% 0)",
-      })
-      .to(
-        ".project-item-header-2",
-        {
-          clipPath: "inset(0 0 100% 0)",
-        },
-        "<",
-      )
-      .to(
-        ".project-item-1",
-        {
-          clipPath: "inset(0 0 100% 0)",
-          stagger: 0.05,
-        },
-        "<",
-      )
-      .to(
-        ".project-item-2",
-        {
-          clipPath: "inset(0 0 100% 0)",
-          stagger: 0.05,
-        },
-        "<",
-      )
-      .to(
-        ".img:not(.main-img)",
-        {
-          clipPath: "inset(0 0 100% 0)",
-        },
-        "<",
-      )
-      .to(".main-img", {
-        yPercent: -20,
-      })
-      .to(
-        ".main",
-        {
-          backgroundColor: "white",
-        },
-        "<",
-      )
-      .fromTo(
-        ".main-img",
-        {
-          clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-        },
-        {
-          scale: 3,
-          clipPath: "polygon(15% 0%, 85% 0%, 85% 100%, 15% 100%)",
-          ease: "glide",
-          immediateRender: false,
+          onStart: shuffleImage,
           onComplete: () => {
-            const mainImage = document
-              .querySelector(".main-img")
-              .getBoundingClientRect();
-            gsap.set(".main-img-cpy", {
-              left: mainImage.left,
-              top: mainImage.top,
-              width: mainImage.width,
-              autoAlpha: 1,
-              height: mainImage.height,
-              clipPath: "polygon(15% 0%, 85% 0%, 85% 100%, 15% 100%)",
-            });
-
-            gsap.to(".preloader", {
+            gsap.set(".logo", {
               display: "none",
             });
           },
-        },
-      )
-      .fromTo(
-        ".navbar",
-        {
-          yPercent: -100,
-          autoAlpha: 0,
-        },
-        {
-          yPercent: 0,
-          autoAlpha: 1,
-        },
-        "<",
-      )
-      .to(".main-img-cpy:nth-child(1)", {
-        rotate: 20,
-        xPercent: 50,
-        scale: 0.8,
-        ease: "hop",
-      })
-      .to(
-        ".main-img-cpy:nth-child(2)",
-        {
-          rotate: -20,
-          scale: 0.8,
-          xPercent: -50,
-          ease: "hop",
-        },
-        "<",
-      )
-      .fromTo(
-        ".appear",
-        {
-          opacity: 0,
-        },
-        {
+        })
+        .fromTo(
+          ".project-item-1",
+          {
+            opacity: 0,
+          },
+          {
+            opacity: 0.4,
+            stagger: 0.05,
+          },
+          "<",
+        )
+        .fromTo(
+          ".project-item-2",
+          {
+            opacity: 0,
+          },
+          {
+            opacity: 0.4,
+            stagger: 0.05,
+          },
+          "<",
+        )
+        .from(
+          ".img",
+          {
+            clipPath: "inset(0 0 100% 0)",
+            ease: "glide",
+          },
+          "<",
+        )
+        .to(".project-item-1", {
           opacity: 1,
-        },
-      );
+          stagger: 0.08,
+        })
+        .to(
+          ".project-item-2",
+          {
+            opacity: 1,
+            stagger: 0.08,
+          },
+          "<",
+        )
+        .to(".project-item-header-1", {
+          clipPath: "inset(0 0 100% 0)",
+        })
+        .to(
+          ".project-item-header-2",
+          {
+            clipPath: "inset(0 0 100% 0)",
+          },
+          "<",
+        )
+        .to(
+          ".project-item-1",
+          {
+            clipPath: "inset(0 0 100% 0)",
+            stagger: 0.05,
+          },
+          "<",
+        )
+        .to(
+          ".project-item-2",
+          {
+            clipPath: "inset(0 0 100% 0)",
+            stagger: 0.05,
+          },
+          "<",
+        )
+        .to(
+          ".img:not(.main-img)",
+          {
+            clipPath: "inset(0 0 100% 0)",
+          },
+          "<",
+        )
+        .to(".main-img", {
+          yPercent: -20,
+        })
+        .to(
+          ".main",
+          {
+            backgroundColor: "white",
+          },
+          "<",
+        )
+        .fromTo(
+          ".main-img",
+          {
+            clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+          },
+          {
+            scale: 3,
+            clipPath: "polygon(15% 0%, 85% 0%, 85% 100%, 15% 100%)",
+            ease: "glide",
+            immediateRender: false,
+            onComplete: () => {
+              const mainImage = document
+                .querySelector(".main-img")
+                .getBoundingClientRect();
+              gsap.set(".main-img-cpy", {
+                left: mainImage.left,
+                top: mainImage.top,
+                width: mainImage.width,
+                autoAlpha: 1,
+                height: mainImage.height,
+                clipPath: "polygon(15% 0%, 85% 0%, 85% 100%, 15% 100%)",
+              });
+
+              gsap.to(".preloader", {
+                display: "none",
+              });
+            },
+          },
+        )
+        .fromTo(
+          ".navbar",
+          {
+            yPercent: -100,
+            autoAlpha: 0,
+          },
+          {
+            yPercent: 0,
+            autoAlpha: 1,
+          },
+          "<",
+        )
+        .to(".main-img-cpy:nth-child(1)", {
+          rotate: 20,
+          xPercent: 50,
+          scale: 0.8,
+          ease: "hop",
+        })
+        .to(
+          ".main-img-cpy:nth-child(2)",
+          {
+            rotate: -20,
+            scale: 0.8,
+            xPercent: -50,
+            ease: "hop",
+          },
+          "<",
+        )
+        .fromTo(
+          ".appear",
+          {
+            opacity: 0,
+          },
+          {
+            opacity: 1,
+          },
+        );
+    });
   });
 
   const songsArtist = [
