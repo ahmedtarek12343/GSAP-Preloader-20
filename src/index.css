@@ -1,1 +1,6 @@
 @import "tailwindcss";
+
+body {
+  visibility: "hidden";
+  opacity: 0;
+}

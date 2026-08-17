@@ -40,6 +40,10 @@ const App = () => {
 
   useGSAP(() => {
     preloadImages(() => {
+      gsap.set("body", {
+        autoAlpha: 1,
+      });
+
       const tl = gsap.timeline();
 
       gsap.set(".main-img-cpy", {
