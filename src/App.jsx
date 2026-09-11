@@ -14,7 +14,7 @@ const App = () => {
     imgs.forEach((img, mainIdx) => {
       let i = 0;
       const interval = setInterval(() => {
-        img.src = `/image${mainIdx + 1}_${(i % 4) + 1}.png`;
+        img.src = `/image${mainIdx + 1}_${(i % 4) + 1}.webp`;
         i++;
         if (i === 21) {
           clearInterval(interval);
@@ -30,7 +30,7 @@ const App = () => {
     for (let mainIdx = 1; mainIdx <= 9; mainIdx++) {
       for (let frame = 1; frame <= 4; frame++) {
         const img = new Image();
-        img.src = `/image${mainIdx}_${frame}.png`;
+        img.src = `/image${mainIdx}_${frame}.webp`;
         img.onload = img.onerror = () => {
           loaded++;
           if (loaded === total) callback();
@@ -40,9 +40,28 @@ const App = () => {
   }
 
   useGSAP((_context, contextSafe) => {
-    gsap.set("body", {
-      autoAlpha: 1,
-    });
+    // 1. Every initial state, set synchronously. useGSAP runs on
+    // useLayoutEffect, so these land after the DOM exists but BEFORE the
+    // browser paints — the elements are never visible in their natural
+    // state. Deferring any of these until after the preload is what caused
+    // the flash of full-size images on refresh.
+    gsap.set(".main-img-cpy", { autoAlpha: 0 });
+    gsap.set(".navbar", { yPercent: -100, autoAlpha: 0 });
+    gsap.set(".logo", { opacity: 0.2 });
+    gsap.set(
+      [
+        ".appear",
+        ".project-item-1",
+        ".project-item-2",
+        ".project-item-header-1",
+        ".project-item-header-2",
+      ],
+      { opacity: 0 },
+    );
+    gsap.set(".img", { clipPath: "inset(0 0 100% 0)" });
+
+    // 2. Only now is it safe to undo the visibility:hidden from index.css.
+    gsap.set("body", { autoAlpha: 1 });
 
     // React StrictMode (dev only) mounts, unmounts, then remounts this
     // effect, which would otherwise kick off two overlapping preloads and
@@ -58,16 +77,15 @@ const App = () => {
 
         const tl = gsap.timeline();
 
-        gsap.set(".main-img-cpy", {
-          autoAlpha: 0,
-        });
-
-        tl.from(".logo", {
-          opacity: 0.2,
+        // Initial states are already applied above, so every reveal here is a
+        // .to()/.fromTo(). A .from() would read the current value as its
+        // destination and animate 0 -> 0, i.e. nothing would appear.
+        tl.to(".logo", {
+          opacity: 1,
           duration: 1.5,
         })
-          .from([".project-item-header-1", ".project-item-header-2"], {
-            opacity: 0,
+          .to([".project-item-header-1", ".project-item-header-2"], {
+            opacity: 1,
             onStart: shuffleImage,
             onComplete: () => {
               gsap.set(".logo", {
@@ -97,10 +115,10 @@ const App = () => {
             },
             "<",
           )
-          .from(
+          .to(
             ".img",
             {
-              clipPath: "inset(0 0 100% 0)",
+              clipPath: "inset(0% 0% 0% 0%)",
               ease: "glide",
             },
             "<",
@@ -298,21 +316,21 @@ const App = () => {
       <div className="main relative bg-black w-full h-screen overflow-hidden">
         <div className="absolute top-0 left-0 main-img-cpy">
           <img
-            src="./image2_1.png"
+            src="/image2_1.webp"
             alt=""
             className="w-full h-full object-cover"
           />
         </div>
         <div className="absolute top-0 left-0 main-img-cpy">
           <img
-            src="./image3_1.png"
+            src="/image3_1.webp"
             alt=""
             className="w-full h-full object-cover"
           />
         </div>
         <div className="absolute top-0 left-0 main-img-cpy">
           <img
-            src="./image5_1.png"
+            src="/image5_1.webp"
             alt=""
             className="w-full h-full object-cover"
           />
@@ -351,7 +369,7 @@ const App = () => {
                     className="img-wrapper w-[min(160px,20vw)] h-[min(160px,20vw)]"
                   >
                     <img
-                      src={`/image${i + 1}_1.png`}
+                      src={`/image${i + 1}_1.webp`}
                       alt=""
                       className={`img w-full h-full object-cover ${i === 4 ? "main-img" : ""}`}
                     />
